@@ -1,26 +1,53 @@
 import React, { Component } from "react";
 import { StyleSheet, View, Animated } from "react-native";
 
-const ballY = new Animated.Value(0);
-// divide, multiply, subtract, add
-const ballX = Animated.divide(ballY, 2);
-
 class App extends Component {
   state = {
-    ballY: ballY,
-    ballX: ballX,
+    ballX: new Animated.Value(0),
+    ballY: new Animated.Value(0),
   };
 
   componentDidMount() {
-    const { ballY } = this.state;
+    const { ballX, ballY } = this.state;
 
-    Animated.decay(ballY, {
-      velocity: 0.5,
-    }).start();
+    Animated.loop(
+      Animated.sequence([
+        Animated.timing(ballY, {
+          toValue: 200,
+          duration: 500,
+        }),
+
+        Animated.delay(200),
+
+        Animated.timing(ballX, {
+          toValue: 200,
+          duration: 500,
+        }),
+
+        Animated.delay(200),
+
+        Animated.timing(ballY, {
+          toValue: 0,
+          duration: 500,
+        }),
+
+        Animated.delay(200),
+
+        Animated.timing(ballX, {
+          toValue: 0,
+          duration: 500,
+        }),
+
+        Animated.delay(200)
+      ]),
+      {
+        iterations: 2,
+      }
+    ).start();
   }
 
   render() {
-    const { ballY, ballX } = this.state;
+    const { ballX, ballY } = this.state;
 
     return (
       <View style={styles.container}>
