@@ -1,18 +1,18 @@
 import React, { Component } from "react";
 import { StyleSheet, View, Animated } from "react-native";
 
+const ballY = new Animated.Value(0);
+// divide, multiply, subtract, add
+const ballX = Animated.divide(ballY, 2);
+
 class App extends Component {
   state = {
-    ballY: new Animated.Value(0)
+    ballY: ballY,
+    ballX: ballX,
   };
 
   componentDidMount() {
     const { ballY } = this.state;
-
-    // Animated.spring(ballY, {
-    //   toValue: 300,
-    //   bounciness: 8 // default 8
-    // }).start();
 
     Animated.decay(ballY, {
       velocity: 0.5,
@@ -20,11 +20,11 @@ class App extends Component {
   }
 
   render() {
-    const { ballY } = this.state;
+    const { ballY, ballX } = this.state;
 
     return (
       <View style={styles.container}>
-        <Animated.View style={[styles.ball, { top: ballY }]} />
+        <Animated.View style={[styles.ball, { top: ballY, left: ballX }]} />
       </View>
     );
   }
@@ -33,15 +33,15 @@ class App extends Component {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    padding: 30
+    padding: 30,
   },
 
   ball: {
     width: 70,
     height: 70,
     borderRadius: 35,
-    backgroundColor: "#f00"
-  }
+    backgroundColor: "#f00",
+  },
 });
 
 export default App;
