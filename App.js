@@ -1,36 +1,66 @@
-import React, { Component } from "react";
-import { StyleSheet, View, Animated } from "react-native";
+import React, { Component } from 'react';
+import { StyleSheet, View, Animated, PanResponder } from 'react-native';
 
 class App extends Component {
   state = {
-    ballY: new Animated.Value(0),
+    ball: new Animated.ValueXY({ x: 0, y: 0 })
   };
 
-  componentDidMount() {
-    const { ballY } = this.state;
+  UNSAFE_componentWillMount() {
+    const { ball } = this.state;
 
-    Animated.timing(ballY, {
-      toValue: 500,
-      duration: 1000,
-    }).start();
+    this._panResponder = PanResponder.create({
+      onMoveShouldSetPanResponder: (e, gestureState) => true,
+
+      onPanResponderGrant: (e, gestureState) => {
+        ball.setOffset({
+          x: ball.x._value,
+          y: ball.y._value
+        });
+
+        ball.setValue({ x: 0, y: 0 });
+      },
+
+      onPanResponderMove: Animated.event(
+        [
+          null,
+          {
+            dx: ball.x,
+            dy: ball.y,
+          }
+        ],
+        {
+          listener: (e, gestureState) => {
+            console.log(gestureState);;
+          },
+        }
+      ),
+
+      onPanResponderRelease: () => {
+        ball.flattenOffset();
+      },
+    });
   }
 
   render() {
-    const { ballY } = this.state;
+    const { ball } = this.state;
 
     return (
       <View style={styles.container}>
         <Animated.View
+          {...this._panResponder.panHandlers}
           style={[
             styles.ball,
             {
-              top: ballY,
-              opacity: ballY.interpolate({
-                inputRange: [0, 300],
-                outputRange: [1, 0.2],
-                extrapolate: "clamp"
-              })
-            }
+              transform: [
+                {
+                  translateX: ball.x
+                },
+                {
+                  translateY: ball.y
+                }
+              ]
+            },
           ]}
         />
       </View>
@@ -41,15 +71,15 @@ class App extends Component {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    padding: 30,
+    padding: 30
   },
 
   ball: {
     width: 70,
     height: 70,
     borderRadius: 35,
-    backgroundColor: "#f00",
-  },
+    backgroundColor: '#f00'
+  }
 });
 
 export default App;
